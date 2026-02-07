@@ -125,10 +125,58 @@ class _PartnerAdminPageState extends State<PartnerAdminPage> {
       case 3:
         return const Center(child: Text("정산 센터 페이지 (준비중)"));
       case 4:
-        return const Center(child: Text("개발자 센터 페이지 (준비중)"));
+        return _buildDeveloperSettings();
       default:
         return _buildDashboard();
     }
+  }
+
+  // C. 개발자 설정 (Developer Settings)
+  Widget _buildDeveloperSettings() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("🛠️ 개발자 설정", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Webhook URL 설정", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 8),
+              const Text("결제 완료 시 알림을 받을 게임 서버의 URL을 입력하세요.", style: TextStyle(color: Colors.grey, fontSize: 14)),
+              const SizedBox(height: 16),
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: "Webhook URL",
+                  hintText: "https://api.yourgame.com/webhook/payment",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.webhook),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Webhook URL이 저장되었습니다.")));
+                  },
+                  icon: const Icon(Icons.save),
+                  label: const Text("저장하기"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   // A. 대시보드 (Dashboard)
