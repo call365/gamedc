@@ -14,7 +14,8 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.0'
+          # Uses the latest stable version which supports flutter_bootstrap.js
+          cache: true
       - name: Install dependencies
         run: flutter pub get
       - name: Build Web
