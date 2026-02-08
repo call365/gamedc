@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter_web_shop/partner_admin.dart';
 import 'package:flutter_web_shop/super_admin.dart';
-import 'payment_page.dart';
+import 'package:flutter_web_shop/user_shop.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,16 +12,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 실제로는 URL 파싱이나 로그인 상태에 따라 초기 화면을 결정해야 함
     return MaterialApp(
-      title: 'Game DTC Web Shop',
+      title: 'GameDTC Platform',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.indigo,
         useMaterial3: true,
+        fontFamily: 'NotoSansKR',
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const MyHomePage(),
+        '/': (context) => const LandingPage(),
+        '/shop': (context) => const UserShopPage(),
         '/partner': (context) => const PartnerAdminPage(),
         '/super': (context) => const SuperAdminPage(),
       },
@@ -31,80 +30,135 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  // 실제로는 Firestore StreamBuilder로 포인트 잔액을 실시간으로 가져와야 합니다.
-  int _currentPoints = 0; 
+class LandingPage extends StatelessWidget {
+  const LandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('게임 아이템 상점'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Row(
+          children: [
+            Icon(Icons.videogame_asset, color: Colors.indigo, size: 32),
+            SizedBox(width: 8),
+            Text('GameDTC', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 24)),
+          ],
+        ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: Text(
-                '내 포인트: $_currentPoints P',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
+          TextButton(
+            onPressed: () => Navigator.pushNamed(context, '/shop'),
+            child: const Text('샘플 상점', style: TextStyle(color: Colors.grey)),
           ),
-          // 데모용 어드민 이동 버튼
-          IconButton(
-            icon: const Icon(Icons.business),
-            tooltip: '파트너 어드민',
+          const SizedBox(width: 16),
+          TextButton(
             onPressed: () => Navigator.pushNamed(context, '/partner'),
+            child: const Text('파트너 로그인', style: TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold)),
           ),
-          IconButton(
-            icon: const Icon(Icons.admin_panel_settings),
-            tooltip: '슈퍼 어드민',
-            onPressed: () => Navigator.pushNamed(context, '/super'),
-          ),
+          const SizedBox(width: 24),
         ],
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              '원하는 아이템을 구매하세요!',
-              style: TextStyle(fontSize: 24),
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PaymentPage()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                textStyle: const TextStyle(fontSize: 20),
-              ),
-              child: const Text('포인트 충전하기 (10,000 P)'),
-            ),
-            const SizedBox(height: 20),
-            // 아이템 리스트 예시 (Grid)
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                padding: const EdgeInsets.all(20),
-                mainAxisSpacing: 20,
-                crossAxisSpacing: 20,
+          children: [
+            // 1. Hero Section
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 20),
+              color: const Color(0xFFF5F7FA),
+              child: Column(
                 children: [
-                  _buildItemCard('다이아 100개', '1,000 P', 1000),
-                  _buildItemCard('다이아 500개', '4,500 P (10% 할인)', 4500),
-                  _buildItemCard('전설의 검', '50,000 P', 50000),
-                  _buildItemCard('용사의 방패', '30,000 P', 30000),
+                  const Text(
+                    "누구나 쉽게 만드는\n나만의 게임 아이템 샵",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.w800, height: 1.2, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    "복잡한 결제 연동, 정산 시스템을 10분 만에 구축하세요.\n전 세계 게이머를 위한 상점을 지금 바로 시작할 수 있습니다.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18, color: Colors.grey, height: 1.6),
+                  ),
+                  const SizedBox(height: 40),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pushNamed(context, '/partner'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.indigo,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
+                    child: const Text("무료로 시작하기", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("신용카드 없이 시작 가능 • 14일 무료 체험", style: TextStyle(color: Colors.grey, fontSize: 14)),
+                ],
+              ),
+            ),
+
+            // 2. Features Section
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 20),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1200),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildFeatureItem(
+                      icon: Icons.payment,
+                      title: "글로벌 결제 지원",
+                      desc: "PG사 계약 없이도\n즉시 카드/간편결제 연동 가능",
+                    ),
+                    _buildFeatureItem(
+                      icon: Icons.analytics_outlined,
+                      title: "강력한 어드민",
+                      desc: "매출 현황부터 아이템 관리까지\n한눈에 파악하는 대시보드",
+                    ),
+                    _buildFeatureItem(
+                      icon: Icons.bolt,
+                      title: "실시간 연동",
+                      desc: "웹훅(Webhook)을 통해\n게임 서버와 실시간 데이터 동기화",
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 3. CTA Section
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 60),
+              color: Colors.indigo,
+              child: Column(
+                children: [
+                  const Text("지금 바로 입점하세요", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
+                  const SizedBox(height: 20),
+                  OutlinedButton(
+                    onPressed: () => Navigator.pushNamed(context, '/partner'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.white),
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+                    ),
+                    child: const Text("파트너 등록 신청", style: TextStyle(fontSize: 16)),
+                  ),
+                ],
+              ),
+            ),
+            
+            // 4. Footer
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              color: Colors.grey.shade900,
+              child: const Column(
+                children: [
+                  Text("GameDTC Platform", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10),
+                  Text("© 2026 GameDTC Inc. All rights reserved.", style: TextStyle(color: Colors.grey)),
                 ],
               ),
             ),
@@ -114,67 +168,22 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildItemCard(String name, String priceStr, int price) {
-    return Card(
-      elevation: 4,
+  Widget _buildFeatureItem({required IconData icon, required String title, required String desc}) {
+    return Expanded(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.shopping_bag, size: 48, color: Colors.amber),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: Colors.indigo.shade50, shape: BoxShape.circle),
+            child: Icon(icon, size: 40, color: Colors.indigo),
+          ),
+          const SizedBox(height: 20),
+          Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
-          Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 5),
-          Text(priceStr, style: const TextStyle(color: Colors.blueGrey)),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () => _buyItem(name, price),
-            child: const Text('구매'),
-          )
+          Text(desc, textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey, height: 1.5)),
         ],
       ),
     );
   }
-
-  Future<void> _buyItem(String itemId, int price) async {
-    const String cloudFunctionUrl = 'http://localhost:5001/demo-test/us-central1/buyItem';
-    try {
-      final response = await http.post(
-        Uri.parse(cloudFunctionUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'data': {
-            'item_id': itemId,
-            'price': price,
-          }
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        if (body['result'] != null && body['result']['success'] == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('구매 완료! 포인트가 차감되었습니다.')),
-          );
-          // 포인트 갱신 (데모용: 로컬 상태만 갱신)
-          setState(() {
-            _currentPoints -= price;
-          });
-        } else {
-           // 에러 메시지 파싱
-           final errorMsg = body['error']?['message'] ?? 'Unknown error';
-           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('구매 실패: $errorMsg')),
-          );
-        }
-      } else {
-         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('서버 오류: ${response.statusCode}')),
-          );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('통신 오류: $e')),
-      );
-    }
-  }
 }
+
